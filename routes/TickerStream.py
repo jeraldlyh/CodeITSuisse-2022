@@ -1,13 +1,29 @@
 from collections import OrderedDict
 
 import pandas as pd
+from flask import jsonify, request
+
+from routes import app
+
+
+@app.route("/tickerStreamPart1", methods=["POST"])
+def ticker_stream_part_one():
+    input_data = request.get_json()["stream"]
+
+    return jsonify({"output": to_cumulative(input_data)})
+
+
+@app.route("/tickerStreamPart2", methods=["POST"])
+def ticker_stream_part_two():
+    input_data = request.get_json()["stream"]
+    quantity_block = request.get_json()["quantityBlock"]
+
+    return jsonify({"output": to_cumulative_delayed(input_data, quantity_block)})
 
 
 def to_cumulative(stream: list):
     df = get_cumulative_db(stream)
-    df = df[[
-        'timestamp', 'ticker', 'cumulative quantity', 'cumulative nominal'
-    ]]
+    df = df[["timestamp", "ticker", "cumulative quantity", "cumulative nominal"]]
     output = format_string_cumulative(df)
     return output
 
@@ -35,7 +51,7 @@ def format_string_cumulative(df: pd.DataFrame):
         temp_ticker_data = []
         for ticker, ticker_info in timestamp_values.items():
             temp_ticker_data.append(f'{ticker},{",".join(ticker_info)}')
-        
+
         output.append(f'{timestamp},{",".join(temp_ticker_data)}')
 
     return output
@@ -43,19 +59,18 @@ def format_string_cumulative(df: pd.DataFrame):
 
 def get_cumulative_db(stream: list):
     arr = [sub.split(",") for sub in stream]
-    df = pd.DataFrame(arr,
-                      columns=['timestamp', 'ticker', 'quantity', 'price'])
-    df.sort_values(by=['timestamp', 'ticker'], inplace=True)
-    df[['quantity', 'price']] = df[['quantity', 'price']].apply(pd.to_numeric)
-    df['nominal'] = df['quantity'] * df['price']
-    df['cumulative quantity'] = df.groupby('ticker')['quantity'].cumsum()
-    df['cumulative nominal'] = df.groupby('ticker')['nominal'].cumsum()
+    df = pd.DataFrame(arr, columns=["timestamp", "ticker", "quantity", "price"])
+    df.sort_values(by=["timestamp", "ticker"], inplace=True)
+    df[["quantity", "price"]] = df[["quantity", "price"]].apply(pd.to_numeric)
+    df["nominal"] = df["quantity"] * df["price"]
+    df["cumulative quantity"] = df.groupby("ticker")["quantity"].cumsum()
+    df["cumulative nominal"] = df.groupby("ticker")["nominal"].cumsum()
     return df
 
 
 def to_cumulative_delayed(stream: list, quantity_block: int):
     df = get_cumulative_db(stream)
-    df.sort_values(by=['ticker', 'timestamp'], inplace=True)
+    df.sort_values(by=["ticker", "timestamp"], inplace=True)
 
     values_list = df.values.tolist()
     output = []
@@ -84,11 +99,15 @@ def to_cumulative_delayed(stream: list, quantity_block: int):
             current_quantity = cumulative_quantity - excessive_tickers
 
             output.append(
-                timestamp + ',' + ticker_name + ',' + str(current_quantity) +
-                ',' +
-                str(round(cumulative_nominal -
-                            (excessive_tickers * price), 1)))
-        
+                timestamp
+                + ","
+                + ticker_name
+                + ","
+                + str(current_quantity)
+                + ","
+                + str(round(cumulative_nominal - (excessive_tickers * price), 1))
+            )
+
         # Assign the remainder value
         temp_quantity_block = temp_quantity_block % quantity_block
 

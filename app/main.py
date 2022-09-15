@@ -1,12 +1,9 @@
-import os
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from stats import to_cumulative, to_cumulative_delayed
 
 load_dotenv()
-
-print(os.environ.get('FLASK_APP'))
 
 app = Flask(__name__)
 
@@ -17,7 +14,6 @@ def hello():
 
 @app.route("/tickerStreamPart1", methods=["POST"])
 def ticker_stream_part_one():
-    print(request.get_json())
     input_data = request.get_json()["stream"]
     
     return jsonify({"output": to_cumulative(input_data)})

@@ -8,24 +8,37 @@ def to_cumulative(stream: list):
     df = df[[
         'timestamp', 'ticker', 'cumulative quantity', 'cumulative nominal'
     ]]
-    # list of list of values, where valuesList[0][0] returns the first value of the first column of first row
-    ans = format_string_cumulative(df)
-    return ans
+    output = format_string_cumulative(df)
+    return output
 
 
 def format_string_cumulative(df: pd.DataFrame):
-    valuesList = df.values.tolist()
-    mapT = OrderedDict()
+    values_list = df.values.tolist()
+    sorted_map = OrderedDict(OrderedDict())
 
-    for row in valuesList:
-        newValue = ','.join(str(val) for val in row[1:])
-        if (row[0] in mapT.keys()):
-            currString = mapT[row[0]]
-            mapT[row[0]] = currString + ',' + newValue
+    for row in values_list:
+        timestamp = row[0]
+        ticker_symbol = row[1]
+        cumulative_quantity = str(row[2])
+        cumulative_nominal = str(row[3])
+
+        if timestamp not in sorted_map.keys():
+            sorted_map[timestamp] = {
+                ticker_symbol: [cumulative_quantity, cumulative_nominal]
+            }
         else:
-            mapT[row[0]] = newValue
+            timestamp_tickers = sorted_map[timestamp]
+            timestamp_tickers[ticker_symbol] = [cumulative_quantity, cumulative_nominal]
 
-    return [key + "," + value for key, value in mapT.items()]
+    output = []
+    for timestamp, timestamp_values in sorted_map.items():
+        temp_ticker_data = []
+        for ticker, ticker_info in timestamp_values.items():
+            temp_ticker_data.append(f'{ticker},{",".join(ticker_info)}')
+        
+        output.append(f'{timestamp},{",".join(temp_ticker_data)}')
+
+    return output
 
 
 def get_cumulative_db(stream: list):
@@ -65,6 +78,7 @@ def to_cumulative_delayed(stream: list, quantity_block: int):
         temp_quantity_block += ticker_quantity  # Assign cumulative quantity
         multiples = temp_quantity_block // quantity_block
 
+        # Report unique tickers based on the current timestamp instead of iterating over number of multiples
         if multiples != 0:
             excessive_tickers = temp_quantity_block % quantity_block
             current_quantity = cumulative_quantity - excessive_tickers

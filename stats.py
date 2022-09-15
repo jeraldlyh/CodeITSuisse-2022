@@ -48,19 +48,18 @@ def to_cumulative_delayed(stream: list, quantity_block: int):
     output = []
     temp_quantity_block = 0  # Keeps track of quantity
     current_ticker = values_list[0][1]
-    quotient = 1
 
     for row in values_list:
-        price = row[3]
         timestamp = row[0]
         ticker_name = row[1]
-        cumulative_nominal = row[6]
         ticker_quantity = row[2]
+        price = row[3]
+        cumulative_quantity = row[5]
+        cumulative_nominal = row[6]
 
         # Dispose previous ticker values and reset quotient
         if ticker_name != current_ticker:
             current_ticker = ticker_name
-            quotient = 1
             temp_quantity_block = 0
 
         temp_quantity_block += ticker_quantity  # Assign cumulative quantity
@@ -68,14 +67,13 @@ def to_cumulative_delayed(stream: list, quantity_block: int):
 
         if multiples != 0:
             excessive_tickers = temp_quantity_block % quantity_block
-            current_quantity = temp_quantity_block - excessive_tickers
+            current_quantity = cumulative_quantity - excessive_tickers
 
             output.append(
                 timestamp + ',' + ticker_name + ',' + str(current_quantity) +
                 ',' +
                 str(round(cumulative_nominal -
                             (excessive_tickers * price), 1)))
-            quotient += 1
         
         # Assign the remainder value
         temp_quantity_block = temp_quantity_block % quantity_block

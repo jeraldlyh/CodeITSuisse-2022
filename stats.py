@@ -64,12 +64,11 @@ def to_cumulative_delayed(stream: list, quantity_block: int):
             temp_quantity_block = 0
 
         temp_quantity_block += ticker_quantity  # Assign cumulative quantity
-
         multiples = temp_quantity_block // quantity_block
 
-        for i in range(1, multiples + 1):
+        for i in range(0, multiples):
             current_quantity = quantity_block * quotient
-            excessive_tickers = multiples - i
+            excessive_tickers = temp_quantity_block - (multiples - i) * quantity_block
 
             output.append(
                 timestamp + ',' + ticker_name + ',' + str(current_quantity) +

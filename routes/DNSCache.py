@@ -31,6 +31,8 @@ async def simulateQuery():
     for log in logs:
         ip_address = retrieve_ip_address(log, lookup_table)
         is_null_ip_address = ip_address is None
+        payload = None
+
         if log not in cache:
             payload = {
                 "status": "cache miss" if not is_null_ip_address else "invalid",
@@ -47,13 +49,12 @@ async def simulateQuery():
                             least_used_domain = key
                     cache.pop(least_used_domain)
                 cache[log] = {"ip_address": ip_address, "datetime": datetime.now()}
-            output.append(payload)
         else:
             payload = {"status": "cache hit", "ipAddress": ip_address}
             cache[log]["datetime"] = datetime.now()
-            output.append(payload)
+        output.append(payload)
 
-    return jsonify({"JSON": output})
+    return jsonify({"JSON": output, "status": 200})
 
 
 def retrieve_ip_address(domain, lookup_table):

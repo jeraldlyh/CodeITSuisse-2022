@@ -26,6 +26,11 @@ class Firestore:
         await doc_ref.set(lookup_table)
 
     async def create_swizz_data(self, data):
-        doc_ref = self.get_doc_ref(self.SWIZZ_COLLECTION, self.SWIZZ_DOCUMENT)
+        counter = 0
 
-        await doc_ref.set({data: str(data)})
+        for x in data:
+            doc_ref = self.get_doc_ref(
+                self.SWIZZ_COLLECTION, self.SWIZZ_DOCUMENT + str(counter)
+            )
+            await doc_ref.set(x)
+            counter += 1

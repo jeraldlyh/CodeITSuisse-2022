@@ -38,7 +38,7 @@ def rubiks():
         else:
             pass
 
-    return state
+    return jsonify(state)
 
 def parse_ops(ops): # parse string of operations passed in
     opsArr = []
@@ -212,4 +212,3 @@ def op_left_clockwise(state):
     state["d"][0][0], state["d"][1][0], state["d"][2][0] = tfront[0], tfront[1], tfront[2]
     state["b"][0][2], state["b"][1][2], state["b"][2][2] = tdown[2], tdown[1], tdown[0]
     return state
-

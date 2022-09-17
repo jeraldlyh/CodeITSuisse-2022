@@ -35,8 +35,7 @@ def stig_process_gcd(interview_data, pq_data=None, lucky_number=None):
             if is_valid:
                 possibleSet = set([x for x in possibleSet if x in value_range])
             else:
-                possibleSet = set(
-                    [x for x in possibleSet if x not in value_range])
+                possibleSet = set([x for x in possibleSet if x not in value_range])
 
         if min(possibleSet) == i:
             accurate_answers += 1
@@ -61,8 +60,7 @@ def stig_process_gcd_new(max_rating, questions):
             if is_valid:
                 possibleSet = set([x for x in possibleSet if x in value_range])
             else:
-                possibleSet = set(
-                    [x for x in possibleSet if x not in value_range])
+                possibleSet = set([x for x in possibleSet if x not in value_range])
 
         if min(possibleSet) == i:
             accurate_answers += 1
@@ -87,13 +85,9 @@ def convert_value(original, p, lucky_number, max_rating):
 
 
 def get_new_ques(lower_bound, higher_bound, p, lucky_number, max_rating):
-    lower_bound = convert_value(
-        lower_bound, p, lucky_number, max_rating
-    )
+    lower_bound = convert_value(lower_bound, p, lucky_number, max_rating)
 
-    higher_bound = convert_value(
-        higher_bound, p, lucky_number, max_rating
-    )
+    higher_bound = convert_value(higher_bound, p, lucky_number, max_rating)
 
     if lower_bound > higher_bound or higher_bound < lower_bound:
         temp_bound = lower_bound
@@ -113,6 +107,7 @@ def stigfull(interview_data):
     p = 1
     q = 6
     output = []
+    print(len(interview_data))
 
     for interview in interview_data:
         lucky_number = interview["lucky"]
@@ -122,21 +117,11 @@ def stigfull(interview_data):
             oldLower = questions[i]["lower"]
             oldUpper = questions[i]["upper"]
             newLower, newUpper = get_new_ques(
-                oldLower, oldUpper, p, lucky_number, max_rating)
+                oldLower, oldUpper, p, lucky_number, max_rating
+            )
             questions[i]["lower"] = newLower
             questions[i]["upper"] = newUpper
-            p, q = stig_process_gcd_new(max_rating, questions[:i+1])
-        output.append({"p": p,
-                       "q": q})
+            p, q = stig_process_gcd_new(max_rating, questions[: i + 1])
+        output.append({"p": p, "q": q})
 
     return output
-
-
-print(stigfull([{
-    "questions": [{
-      "lower": 2,
-      "upper": 3,
-      }],
-    "maxRating": 5,
-    "lucky": 1
-}]))

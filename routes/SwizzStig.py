@@ -16,7 +16,6 @@ async def stigwarmup():
     for interview in interview_data:
         max_rating = interview["maxRating"]
         denominator = max_rating
-        print(denominator)
         accurate_answers = 0
 
         for i in range(1, max_rating + 1):
@@ -25,10 +24,10 @@ async def stigwarmup():
                 is_valid = i >= question["lower"] and i <= question["upper"]
                 valueRange = range(question["lower"], question["upper"] + 1)
                 if not is_valid:
-                    possibleSet = possibleSet.difference(valueRange)
+                    possibleSet = set([x for x in possibleSet if x not in valueRange])
 
                 if is_valid:
-                    possibleSet = possibleSet.intersection(valueRange)
+                    possibleSet = set([x for x in possibleSet if x in valueRange])
 
             if min(possibleSet) == i:
                 accurate_answers += 1

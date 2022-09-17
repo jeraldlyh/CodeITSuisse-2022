@@ -26,7 +26,7 @@ def cryptoCollapz():
             temp_price = convert_price(data)
             max_price = max(data, temp_price)
 
-            while temp_price != 1:
+            while temp_price not in [0, 1]:
                 logging.info("STUCK")
                 temp_price = convert_price(temp_price)
                 max_price = max(max_price, temp_price)

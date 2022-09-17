@@ -30,7 +30,8 @@ def calendar_days():
 def month_and_day_from_ordinal(year: int, day: int):
     startOfYear = dt(year, 1, 1)
     gregOrdinalYear = startOfYear.toordinal()
-    if ((year % 4 == 0 and day <= 366) or
+    isLeapYear = (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
+    if ((isLeapYear and day <= 366) or
             (day <= 365)):
         gregOrdinalDay = gregOrdinalYear + day - 1
         actualDate = datetime.date.fromordinal(gregOrdinalDay)

@@ -99,7 +99,7 @@ def get_new_ques(lower_bound, higher_bound, p, lucky_number, max_rating):
 
 @app.route("/stig/full", methods=["POST"])
 def sol():
-    interview_data = request.get_json()
+    interview_data = request.get_json(cache=False)
     return jsonify(stigfull(interview_data))
 
 
@@ -107,7 +107,6 @@ def stigfull(interview_data):
     p = 1
     q = 6
     output = []
-    counter = 0
 
     for interview in interview_data:
         print(len(interview["questions"]))
@@ -124,6 +123,5 @@ def stigfull(interview_data):
             questions[i]["upper"] = newUpper
             p, q = stig_process_gcd_new(max_rating, questions[: i + 1])
         output.append({"p": p, "q": q})
-        break
 
     return output

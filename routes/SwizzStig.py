@@ -29,7 +29,7 @@ def stigwarmup():
                 if prudent_value == i:
                     accurate_answers += 1
 
-            gcd = Fraction(accurate_answers, denominator)
-            output.append({"p": gcd.numerator, "q": gcd.denominator})
+        gcd = Fraction(accurate_answers, denominator)
+        output.append({"p": gcd.numerator, "q": gcd.denominator})
 
     return jsonify(output)

@@ -1,16 +1,14 @@
 from fractions import Fraction
 
 from flask import jsonify, request
+from utils.firestore import Firestore
 
 from routes import app
 
 
 @app.route("/stig/warmup", methods=["POST"])
-async def stigwarmup():
+def stigwarmup():
     interview_data = request.get_json()
-
-    # db = Firestore()
-    # await db.create_swizz_data(interview_data)
 
     output = []
     for interview in interview_data:
@@ -22,12 +20,12 @@ async def stigwarmup():
             possibleSet = set(range(1, max_rating + 1))
             for question in interview["questions"]:
                 is_valid = i >= question["lower"] and i <= question["upper"]
-                valueRange = range(question["lower"], question["upper"] + 1)
-                if not is_valid:
-                    possibleSet = set([x for x in possibleSet if x not in valueRange])
+                value_range = range(question["lower"], question["upper"] + 1)
 
                 if is_valid:
-                    possibleSet = set([x for x in possibleSet if x in valueRange])
+                    possibleSet = set([x for x in possibleSet if x in value_range])
+                else:
+                    possibleSet = set([x for x in possibleSet if x not in value_range])
 
             if min(possibleSet) == i:
                 accurate_answers += 1
@@ -36,3 +34,15 @@ async def stigwarmup():
         output.append({"p": gcd.numerator, "q": gcd.denominator})
 
     return jsonify(output)
+
+
+@app.route("/stig/full", methods=["POST"])
+async def stigfull():
+    interview_data = request.get_json()
+
+    db = Firestore()
+    await db.create_swizz_data(interview_data)
+
+
+def convert_value(original, p, lucky_number, max_rating):
+    return (original + p * lucky_number - 1) % max_rating + 1

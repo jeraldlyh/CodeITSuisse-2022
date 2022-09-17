@@ -19,7 +19,7 @@ import datetime
 
 
 @app.route("/calendarDays", methods=["POST"])
-def ticker_stream_part_one():
+def calendar_days():
     numbers = request.get_json()["numbers"]
     part1sol = sol1(numbers)
     return jsonify({
@@ -124,7 +124,7 @@ def getOrdinalDict(year):
     return dictOfMonths
 
 
-sol = sol1([2022, 1, 2, 8, 9, 15, 16, 22, 23, 29, 30])
-print(len(sol))
-input = "m      , t     ,weekend,       ,       ,       ,       ,       ,       ,       ,       ,       ,"
-print(sol2(input))
+# sol = sol1([2022, 1, 2, 8, 9, 15, 16, 22, 23, 29, 30])
+# print(len(sol))
+# input = "m      , t     ,weekend,       ,       ,       ,       ,       ,       ,       ,       ,       ,"
+# print(sol2(input))

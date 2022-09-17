@@ -1,3 +1,5 @@
+import logging
+
 from flask import jsonify, request
 
 from routes import app
@@ -14,6 +16,7 @@ def stigwarmup():
         passes = 0
 
         for question in input["questions"]:
+            logging.info(question)
             for i in range(1, max_rating + 1):
                 if i >= question["lower"] and i <= question["higher"]:
 

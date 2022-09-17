@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from flask import jsonify, request
 
 from routes import app
@@ -20,12 +18,11 @@ def cryptoCollapz():
 
 
 def sol(input_data):
-    calculatedDict = defaultdict(int)
+    calculatedDict = {}
     output = []
     for data_array in input_data:
         temp_data_array = []
         for data in data_array:
-
             if data in calculatedDict:
                 temp_data_array.append(calculatedDict[data])
             else:
@@ -35,18 +32,23 @@ def sol(input_data):
     return output
 
 
-def get_largest_num(num, currMax, calculatedDict):
+def get_largest_num(num, global_max, memoized_dict):
     if num == 1:
         return 4
 
-    if num in calculatedDict:
-        return calculatedDict[num]
+    if num in memoized_dict:
+        return memoized_dict[num]
 
-    temp = convert_price(num)
-    tempMax = max(num, temp, get_largest_num(temp, temp, calculatedDict))
-    calculatedDict[temp] = tempMax
-    currMax = max(currMax, tempMax, num)
-    return get_largest_num(temp, currMax, calculatedDict)
+    converted_price = convert_price(num)
+    max_value = max(
+        num,
+        converted_price,
+        get_largest_num(converted_price, converted_price, memoized_dict),
+    )
+    memoized_dict[num] = max(num, max_value, global_max)
+
+    global_max = max(global_max, max_value, num)
+    return get_largest_num(num, global_max, memoized_dict)
 
 
 # calculatedDict = dict()

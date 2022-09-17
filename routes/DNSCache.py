@@ -1,3 +1,4 @@
+import logging
 from asyncio.log import logger
 
 from flask import jsonify, request
@@ -9,6 +10,7 @@ from routes import app
 @app.route("/instantiateDNSLookup", methods=["POST"])
 async def instantiateDNSLookup():
     input_data = request.get_json()
+    logging.info(input_data)
 
     lookup_table = input_data["lookupTable"]
 

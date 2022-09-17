@@ -14,10 +14,9 @@ def convert_price(value):
 @app.route("/cryptocollapz", methods=["POST"])
 def cryptoCollapz():
     input_data = request.get_json()
-    input_data_int = [[int(y) for y in x] for x in input_data]
 
     output = []
-    for data_array in input_data_int:
+    for data_array in input_data:
         temp_data_array = []
 
         for data in data_array:

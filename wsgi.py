@@ -10,4 +10,5 @@ logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
 if __name__ == "__main__":
+    logging.info("Server has started")
     app.run()

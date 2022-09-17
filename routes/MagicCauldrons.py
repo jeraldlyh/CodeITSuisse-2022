@@ -12,12 +12,13 @@ def magic_cauldrons():
 
 def solve(test):
     part1_input = test["part1"]
-    print(part1_input)
+    # print(part1_input)
+    part1_ans = solve_part_1(part1_input)
     part2_input = test["part2"]
-    print(part2_input)
+    part2_ans = solve_part_2(part2_input)
     part3_input = test["part3"]
-    print(part3_input)
+    part3_ans = solve_part_3(part3_input)
     part4_input = test["part4"]
-    print(part4_input)
-    return ({"part1": part1_input, "part2": part2_input, "part3": part3_input, "part4_input": part4_input})
+    part4_ans = solve_part_4(part4_input)
+    return ({"part1": part1_ans, "part2": part2_ans, "part3": part3_ans, "part4_input": part4_ans})
     

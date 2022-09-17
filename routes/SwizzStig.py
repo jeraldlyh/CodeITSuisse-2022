@@ -60,15 +60,17 @@ async def stigfull():
     interview_data = request.get_json()
     interviews = {}  # {index: pq_data}
 
-    for index, interview in enumerate(interview_data):
+    index = 0
+    for interview in interview_data:
         if index - 1 not in interviews:
             interviews[index] = stig_process_gcd(interview)
         else:
             interviews[index] = stig_process_gcd(
                 interview, interviews[index - 1], interview["lucky"]
             )
+        index += 1
     print(interviews)
-    return jsonify([v for k, v in interviews.items()])
+    return jsonify(interviews.values())
 
 
 def convert_value(original, p, lucky_number, max_rating):

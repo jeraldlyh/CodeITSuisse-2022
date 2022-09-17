@@ -40,7 +40,7 @@ def get_largest_num(num, currMax, calculatedDict):
 
     temp = convert_price(num)
     calculatedDict[temp] = max(
-        temp, get_largest_num(temp, temp, calculatedDict))
+        num, temp, get_largest_num(temp, temp, calculatedDict))
     currMax = max(currMax, temp, num)
     return get_largest_num(temp, currMax, calculatedDict)
 

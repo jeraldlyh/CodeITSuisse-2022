@@ -58,6 +58,3 @@ def solve_part_1(flow_rate: int, time: int, row_number: int, col_number: int):
     volForCurrRow = max(0, total_volume - full_volume * (row_number))
     if volForCurrRow > 0:
         pass
-
-
-get_arithmetic_sum(3)

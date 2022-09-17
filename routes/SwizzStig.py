@@ -58,19 +58,18 @@ def stigwarmup():
 @app.route("/stig/full", methods=["POST"])
 async def stigfull():
     interview_data = request.get_json()
-    interviews = {}  # {index: pq_data}
+    current_pq = None
+    output = []
 
     index = 0
     for interview in interview_data:
-        if index - 1 not in interviews:
-            interviews[index] = stig_process_gcd(interview)
+        if not current_pq:
+            current_pq = stig_process_gcd(interview)
         else:
-            interviews[index] = stig_process_gcd(
-                interview, interviews[index - 1], interview["lucky"]
-            )
+            current_pq = stig_process_gcd(interview, current_pq, interview["lucky"])
+        output.append(current_pq)
         index += 1
-    print(interviews)
-    return jsonify(interviews.values())
+    return jsonify(output)
 
 
 def convert_value(original, p, lucky_number, max_rating):

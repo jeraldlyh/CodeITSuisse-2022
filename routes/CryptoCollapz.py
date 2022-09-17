@@ -38,7 +38,7 @@ def cryptoCollapz():
                 calculatedDict[data] = max_price
         output.append(temp_data_array)
     return jsonify(output)
-
+        
 
 # print(cryptoCollapz([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]))
 

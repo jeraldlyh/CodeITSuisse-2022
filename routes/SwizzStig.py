@@ -1,3 +1,4 @@
+import logging
 from fractions import Fraction
 
 from flask import jsonify, request
@@ -18,6 +19,7 @@ def stigwarmup():
         for j in range(len(input["questions"])):
             prudent_value = 1
 
+            logging.info(accurate_answers, denominator)
             for i in range(1, max_rating + 1):
                 for question in input["questions"]:
                     value_pass = question["lower"]

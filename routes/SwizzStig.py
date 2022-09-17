@@ -107,9 +107,10 @@ def stigfull(interview_data):
     p = 1
     q = 6
     output = []
-    print(len(interview_data))
+    counter = 0
 
     for interview in interview_data:
+        print(len(interview)["questions"])
         lucky_number = interview["lucky"]
         max_rating = interview["maxRating"]
         questions = interview["questions"]
@@ -123,5 +124,6 @@ def stigfull(interview_data):
             questions[i]["upper"] = newUpper
             p, q = stig_process_gcd_new(max_rating, questions[: i + 1])
         output.append({"p": p, "q": q})
+        break
 
     return output

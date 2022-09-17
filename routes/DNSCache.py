@@ -1,5 +1,4 @@
-import logging
-from asyncio.log import logger
+from datetime import datetime
 
 from flask import jsonify, request
 from utils.firestore import Firestore
@@ -10,7 +9,6 @@ from routes import app
 @app.route("/instantiateDNSLookup", methods=["POST"])
 async def instantiateDNSLookup():
     input_data = request.get_json()
-    logging.info(input_data)
 
     lookup_table = input_data["lookupTable"]
 
@@ -22,7 +20,6 @@ async def instantiateDNSLookup():
 @app.route("/simulateQuery", methods=["POST"])
 async def simulateQuery():
     input_data = request.get_json()
-    logger.info(input_data)
     cache_size = input_data["cacheSize"]
     logs = input_data["log"]
     cache = {}
@@ -42,11 +39,18 @@ async def simulateQuery():
 
             if not is_null_ip_address:
                 if len(cache) == cache_size:
-                    cache.pop(next(iter(cache)))
-                cache[log] = {"ip_address": ip_address}
+                    least_recently_used = datetime.max
+                    least_used_domain = None
+                    for key, value in cache.items():
+                        if value["datetime"] < least_recently_used:
+                            least_recently_used = value["datetime"]
+                            least_used_domain = key
+                    cache.pop(least_used_domain)
+                cache[log] = {"ip_address": ip_address, "datetime": datetime.now()}
             output.append(payload)
         else:
             payload = {"status": "cache hit", "ipAddress": ip_address}
+            cache[log]["datetime"] = datetime.now()
             output.append(payload)
 
     return jsonify({"JSON": output})

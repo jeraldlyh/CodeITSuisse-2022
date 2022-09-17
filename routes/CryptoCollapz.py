@@ -1,4 +1,5 @@
 from flask import jsonify, request
+
 from routes import app
 
 
@@ -17,39 +18,45 @@ def cryptoCollapz():
 
 
 def sol(input_data):
-    calculatedDict = dict()
+    calculatedDict = {}
     output = []
     for data_array in input_data:
         temp_data_array = []
         for data in data_array:
-            if (data in calculatedDict.keys()):
+            if data in calculatedDict:
                 temp_data_array.append(calculatedDict[data])
             else:
-                temp_data_array.append(
-                    get_largest_num(data, data, calculatedDict))
+                temp_data_array.append(get_largest_num(data, data, calculatedDict))
         output.append(temp_data_array)
+    print(calculatedDict)
     return output
 
 
-def get_largest_num(num, currMax, calculatedDict):
-    if (num == 1):
+def get_largest_num(num, global_max, memoized_dict):
+    if num == 1:
         return 4
 
-    if (num in calculatedDict.keys()):
-        return calculatedDict[num]
+    if num in memoized_dict:
+        return memoized_dict[num]
 
-    temp = convert_price(num)
-    calculatedDict[temp] = max(
-        temp, get_largest_num(temp, temp, calculatedDict))
-    currMax = max(currMax, temp, num)
-    return get_largest_num(temp, currMax, calculatedDict)
+    converted_price = convert_price(num)
+    max_value = max(
+        num,
+        converted_price,
+        get_largest_num(converted_price, converted_price, memoized_dict),
+    )
+    memoized_dict[num] = max(num, max_value, global_max)
+
+    global_max = max(global_max, max_value, num)
+    return get_largest_num(num, global_max, memoized_dict)
 
 
 # calculatedDict = dict()
 # print(get_largest_num(7, 1, calculatedDict))
-# print(calculatedDict)
+
 # print(sol([[1, 2, 3, 4, 5],
 #            [6, 7, 8, 9, 10]]))
+
 
 # [
 #   // test case 1

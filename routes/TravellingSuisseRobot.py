@@ -1,50 +1,6 @@
-from flask import jsonify, request
+from flask import request
 
 from routes import app
-
-
-# def get_plus_matrix(row, col, formatted_matrix):
-#     vertical = []
-#     horizontal = []
-
-#     for row, _ in enumerate(formatted_matrix):
-#         vertical.append(formatted_matrix[row][col])
-
-#     for col, _ in enumerate(formatted_matrix[row]):
-#         horizontal.append(formatted_matrix[row][col])
-
-#     return (horizontal, vertical)
-
-
-# def get_direction(
-#     horizontal, vertical, target_char, row_index, col_index, current_direction
-# ):
-#     direction = ""
-#     # print(horizontal, vertical, target_char)
-
-#     if target_char in vertical:
-#         target_index = vertical.index(target_char)
-
-#         if target_index < row_index:
-#             if current_direction in ["E", "W", "N"]:
-#                 direction = "N"
-#             else:
-#                 direction = "S"
-#         else:
-#             direction = "S"
-
-#     else:
-#         target_index = horizontal.index(target_char)
-
-#         if target_index > col_index:
-#             if current_direction == ["N", "E", "S"]:
-#                 direction = "R"
-#             else:
-#                 direction = "L"
-#         else:
-#             # raise Exception("impossble to be behind me")
-#             pass
-#     return direction
 
 
 @app.route("/travelling-suisse-robot", methods=["POST"])
@@ -61,36 +17,33 @@ def travellingSuisseRobot():
             start_position = (index, col)
 
     direction = ""
-    plus_matrix = get_plus_matrix(
-        start_position[0], start_position[1], matrix
-    )
+    plus_matrix = get_plus_matrix(start_position[0], start_position[1], matrix)
     visited_matrix = [
-        [False for j in range(len(matrix[0]))]
-        for i in range(len(matrix))
+        [False for j in range(len(matrix[0]))] for i in range(len(matrix))
     ]
     horizontal = plus_matrix[0]
     vertical = plus_matrix[1]
 
     # Determine starting direction to find first letter 'C'
     if pattern[0] in vertical:
-        s_index = vertical.index(pattern[0])
+        c_index = vertical.index(pattern[0])
         x_index = vertical.index("X")
 
-        if s_index > x_index:
+        if c_index > x_index:
             pass
         else:
             direction = "N"
     else:
-        s_index = horizontal.index(pattern[0])
+        c_index = horizontal.index(pattern[0])
         x_index = horizontal.index("X")
 
-        if s_index > x_index:
-            direction = "R"
+        if c_index > x_index:
+            direction = "E"
         else:
-            direction = "L"
+            direction = "W"
 
-    print(f'sizeof matrix {len(matrix)} | {len(matrix[0])}')
-    print(f'sizeof visited matrix {len(visited_matrix)} | {len(visited_matrix[0])}')
+    # print(f"sizeof matrix {len(matrix)} | {len(matrix[0])}")
+    # print(f"sizeof visited matrix {len(visited_matrix)} | {len(visited_matrix[0])}")
 
     moves = []
 
@@ -106,28 +59,18 @@ def travellingSuisseRobot():
         visited_matrix,
     )
 
-    print(moves)
-    return jsonify("ok")
+    return "".join(moves), 200, {"Content-Type": "text/plain;"}
 
 
 def traverse(
     row, col, pattern, temp_pattern, index, matrix, moves, direction, visited_matrix
 ):
-    if (
-        row < 0
-        or col < 0
-        or col == len(matrix[0])
-        or row == len(matrix)
-        or visited_matrix[row][col]
-    ):
+    if row < 0 or col < 0 or col == len(matrix[0]) or row == len(matrix):
         return
 
     current_char = matrix[row][col]
-    visited_matrix[row][col] = True
-    print(f'currently at {row} | {col} | {current_char} | {temp_pattern}| {visited_matrix[row][col]}')
 
     if current_char == pattern[index]:
-        print(f"yes - {current_char} | {pattern[index]}")
         temp_pattern += current_char
         moves.append("P")
         index += 1
@@ -135,180 +78,167 @@ def traverse(
     if pattern == temp_pattern:
         return
 
-    if direction == "N":
-        traverse(row - 1, col, pattern, temp_pattern, index, matrix, moves + ["S"], "N", visited_matrix)
-        traverse(row, col + 1, pattern, temp_pattern, index, matrix, moves + ["R"], "E", visited_matrix)
-        traverse(row, col - 1, pattern, temp_pattern, index, matrix, moves + ["L"], "W", visited_matrix)
-    if direction == "E":
-        traverse(row, col + 1, pattern, temp_pattern, index, matrix, moves + ["S"], "E", visited_matrix)
-        traverse(row + 1, col, pattern, temp_pattern, index, matrix, moves + ["R"], "S", visited_matrix)
-        traverse(row - 1, col, pattern, temp_pattern, index, matrix, moves + ["L"], "N", visited_matrix)
-    if direction == "W":
-        traverse(row, col - 1, pattern, temp_pattern, index, matrix, moves + ["S"], "W", visited_matrix)
-        traverse(row + 1, col, pattern, temp_pattern, index, matrix, moves + ["L"], "S", visited_matrix)
-        traverse(row - 1, col, pattern, temp_pattern, index, matrix, moves + ["R"], "N", visited_matrix)
+    plus_matrix = get_plus_matrix(row, col, matrix)
+    horizontal = plus_matrix[0]
+    vertical = plus_matrix[1]
+
+    # print(horizontal)
+    # print(vertical)
+    # print(f"currently facing {direction} at {row} | {col} at {matrix[row][col]}")
+
+    visited_matrix[row][col] = True
+    next_coordinates = find_next_position(
+        row, col, horizontal, vertical, pattern[index], visited_matrix, direction
+    )
+    next_row = next_coordinates[0]
+    next_col = next_coordinates[1]
+    # print(f"going to {next_row} | {next_col} with {matrix[next_row][next_col]} {moves}")
+    next_direction = find_next_direction(direction, row, col, next_row, next_col)
+    is_direction_changed = direction != next_direction
+
+    # Need to traverse vertically
+    if next_row != row:
+        diff = abs(next_row - row)
+        print(f"going vertically {diff} steps to {pattern[index]}")
+
+        if is_direction_changed:
+            moves.append("R" if next_direction == "S" else next_direction)
+        for _ in range(diff):
+            moves.append("S")
+
+        traverse(
+            next_row,
+            col,
+            pattern,
+            temp_pattern,
+            index,
+            matrix,
+            moves,
+            next_direction,
+            visited_matrix,
+        )
+    else:
+        diff = abs(next_col - col)
+        print(f"going horiztonally {diff} steps")
+        if is_direction_changed:
+            moves.append(map_direction(next_direction, direction))
+        for _ in range(diff):
+            moves.append("S")
+
+        traverse(
+            row,
+            next_col,
+            pattern,
+            temp_pattern,
+            index,
+            matrix,
+            moves,
+            next_direction,
+            visited_matrix,
+        )
+
+
+def map_direction(value, direction):
     if direction == "S":
-        traverse(row - 1, col, pattern, temp_pattern, index, matrix, moves + ["S"], "S", visited_matrix)
-        traverse(row, col + 1, pattern, temp_pattern, index, matrix, moves + ["L"], "E", visited_matrix)
-        traverse(row, col - 1, pattern, temp_pattern, index, matrix, moves + ["R"], "W", visited_matrix)
-    
-    visited_matrix[row][col] = False
+        if value == "E":
+            return "L"
+        elif value == "W":
+            return "R"
+    elif direction == "N":
+        if value == "E":
+            return "R"
+        elif value == "W":
+            return "L"
+    raise Exception("Something went wrong with map_direction()")
 
 
-    # plus_matrix = get_plus_matrix(row, col, matrix)
-    # horizontal = plus_matrix[0]
-    # vertical = plus_matrix[1]
+def find_next_direction(direction, row, col, next_row, next_col):
+    if direction == "N":
+        # Traverse vertically
+        if next_row != row:
+            if next_row < row:
+                return "N"
+            else:
+                raise Exception("weird")
+        if next_col != col:
+            if next_col < col:
+                return "W"
+            else:
+                return "E"
+    elif direction == "S":
+        if next_row != row:
+            if next_row < row:
+                raise Exception("weird")
+            else:
+                return "S"
+        if next_col != col:
+            if next_col < col:
+                return "W"
+            else:
+                return "E"
+    elif direction == "E":
+        if next_row != row:
+            if next_row < row:
+                return "N"
+            else:
+                return "S"
+        if next_col != col:
+            if next_col < col:
+                raise Exception("weird")
+            else:
+                return "E"
+    else:
+        if next_row != row:
+            if next_row < row:
+                return "N"
+            else:
+                return "S"
+        if next_col != col:
+            if next_col < col:
+                return "W"
+            else:
+                raise Exception("weird")
+    raise Exception(
+        f"nothing returned at {row} | {col} going to {next_row} | {next_col} facing {direction}"
+    )
 
-    # print(f"current {direction} - [{row}, {col}]")
-    # next_direction = get_direction(
-    #     horizontal, vertical, pattern[index], row, col, direction
-    # )
 
-    # if next_direction == "N":
-    #     # STRAIGHT
-    #     if row - 1 >= 0:
-    #         traverse(
-    #             row - 1,
-    #             col,
-    #             pattern,
-    #             temp_pattern,
-    #             index,
-    #             matrix,
-    #             [moves] + ["S"],
-    #             next_direction,
-    #         )
-    #     # TURN LEFT
-    #     if col - 1 >= 0:
-    #         traverse(
-    #             row - 1,
-    #             col,
-    #             pattern,
-    #             temp_pattern,
-    #             index,
-    #             matrix,
-    #             [moves] + ["L"],
-    #             next_direction,
-    #         )
-    #     # TURN RIGHT
-    #     if col + 1 < len(pattern[0]):
-    #         traverse(
-    #             row,
-    #             col + 1,
-    #             pattern,
-    #             temp_pattern,
-    #             index,
-    #             matrix,
-    #             [moves] + ["R"],
-    #             next_direction,
-    #         )
-    # elif next_direction == "E":
-    #     # STRAIGHT
-    #     if col + 1 < len(pattern[0]):
-    #         traverse(
-    #             row,
-    #             col + 1,
-    #             pattern,
-    #             temp_pattern,
-    #             index,
-    #             matrix,
-    #             [moves] + ["S"],
-    #             next_direction,
-    #         )
-    #     # TURN LEFT
-    #     if row - 1 >= 0:
-    #         traverse(
-    #             row - 1,
-    #             col,
-    #             pattern,
-    #             temp_pattern,
-    #             index,
-    #             matrix,
-    #             [moves] + ["L"],
-    #             next_direction,
-    #         )
-    #     # TURN RIGHT
-    #     if row + 1 < len(pattern):
-    #         traverse(
-    #             row + 1,
-    #             col,
-    #             pattern,
-    #             temp_pattern,
-    #             index,
-    #             matrix,
-    #             [moves] + ["R"],
-    #             next_direction,
-    #         )
-    # elif next_direction == "S":
-    #     # STRAIGHT
-    #     if row + 1 < len(pattern):
-    #         traverse(
-    #             row + 1,
-    #             col,
-    #             pattern,
-    #             temp_pattern,
-    #             index,
-    #             matrix,
-    #             [moves] + ["S"],
-    #             next_direction,
-    #         )
-    #     # TURN RIGHT
-    #     if col - 1 >= 0:
-    #         traverse(
-    #             row,
-    #             col - 1,
-    #             pattern,
-    #             temp_pattern,
-    #             index,
-    #             matrix,
-    #             [moves] + ["R"],
-    #             next_direction,
-    #         )
-    #     # TURN LEFT
-    #     if col + 1 < len(pattern[0]):
-    #         traverse(
-    #             row,
-    #             col + 1,
-    #             pattern,
-    #             temp_pattern,
-    #             index,
-    #             matrix,
-    #             [moves] + ["L"],
-    #             next_direction,
-    #         )
-    # else:
-    #     # TURN STRAIGHT
-    #     if col - 1 >= 0:
-    #         traverse(
-    #             row,
-    #             col - 1,
-    #             pattern,
-    #             temp_pattern,
-    #             index,
-    #             matrix,
-    #             [moves] + ["S"],
-    #             next_direction,
-    #         )
-    #     # TURN LEFT
-    #     if row + 1 < len(pattern):
-    #         traverse(
-    #             row + 1,
-    #             col,
-    #             pattern,
-    #             temp_pattern,
-    #             index,
-    #             matrix,
-    #             [moves] + ["L"],
-    #             next_direction,
-    #         )
-    #     # TURN RIGHT
-    #     if col + 1 < len(pattern[0]):
-    #         traverse(
-    #             row,
-    #             col + 1,
-    #             pattern,
-    #             temp_pattern,
-    #             index,
-    #             matrix,
-    #             [moves] + ["R"],
-    #             next_direction,
-    #         )
+def find_next_position(
+    row, col, horizontal, vertical, target_char, visited_matrix, direction
+):
+    if target_char in horizontal:
+        possible_indices = [i for i, x in enumerate(horizontal) if x == target_char]
+
+        if direction == "W":
+            possible_indices = possible_indices[::-1]
+
+        first_possible_index = 0
+        for index in possible_indices:
+            if not visited_matrix[row][index]:
+                first_possible_index = index
+                break
+        return row, first_possible_index
+
+    possible_indices = [i for i, x in enumerate(vertical) if x == target_char]
+    if direction == "S":
+        possible_indices = possible_indices[::-1]
+
+    first_possible_index = 0
+    for index in possible_indices:
+        if not visited_matrix[index][col]:
+            first_possible_index = index
+            break
+    return first_possible_index, col
+
+
+def get_plus_matrix(row, col, formatted_matrix):
+    vertical = []
+    horizontal = []
+
+    for i in range(len(formatted_matrix)):
+        vertical.append(formatted_matrix[i][col])
+
+    for j in range(len(formatted_matrix[0])):
+        horizontal.append(formatted_matrix[row][j])
+
+    return (horizontal, vertical)

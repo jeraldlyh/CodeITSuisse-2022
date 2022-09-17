@@ -11,7 +11,7 @@ class Firestore:
         self.SWIZZ_COLLECTION = "SWIZZ"
         self.SWIZZ_DOCUMENT = "SWIZZ"
 
-    async def get_doc_ref(self, collection_name, document_name):
+    def get_doc_ref(self, collection_name, document_name):
         return self.db.collection(collection_name).document(self.CACHE_DOCUMENT)
 
     async def get_lookup_table(self):

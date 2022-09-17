@@ -1,3 +1,5 @@
+import logging
+
 from flask import jsonify, request
 
 from routes import app
@@ -13,6 +15,7 @@ def convert_price(value):
 
 @app.route("/cryptocollapz", methods=["POST"])
 def cryptoCollapz():
+    logging.info("Working")
     input_data = request.get_json()
 
     output = []

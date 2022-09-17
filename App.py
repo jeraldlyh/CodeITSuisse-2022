@@ -5,6 +5,7 @@ import firebase_admin
 from dotenv import load_dotenv
 
 from routes import app
+from utils.firestore import Firestore
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./google-credentials.json"
 load_dotenv()
@@ -12,8 +13,11 @@ firebase_admin.initialize_app()
 
 
 @app.route("/")
-def hello():
-    return "Hello, World!"
+async def hello():
+    db = Firestore()
+    data = await db.get_swizz_data(1)
+    print(data)
+    return data
 
 
 logger = logging.getLogger()

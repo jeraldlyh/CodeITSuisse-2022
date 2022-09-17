@@ -8,27 +8,26 @@ from routes import app
 
 @app.route("/stig/warmup", methods=["POST"])
 def stigwarmup():
-    input_data = request.get_json()
+    interview_data = request.get_json()
 
     output = []
-    for input in input_data:
-        max_rating = input["maxRating"]
-        denominator = max_rating * len(input["questions"])
+    for interview in interview_data:
+        max_rating = interview["maxRating"]
+        denominator = max_rating * len(interview["questions"])
         accurate_answers = 0
 
-        for j in range(len(input["questions"])):
-            prudent_value = 1
+        prudent_value = 1
 
-            logging.info(accurate_answers, denominator)
-            for i in range(1, max_rating + 1):
-                for question in input["questions"]:
-                    value_pass = question["lower"]
+        logging.info(accurate_answers, denominator)
+        for i in range(1, max_rating + 1):
+            for question in interview["questions"]:
+                next_possible_prudent_value = question["lower"]
 
-                    # Stig replies
-                    is_valid = i >= question["lower"] and i <= question["upper"]
+                # Stig replies
+                is_valid = i >= question["lower"] and i <= question["upper"]
 
-                    if is_valid:
-                        prudent_value = max(value_pass, prudent_value)
+                if is_valid:
+                    prudent_value = max(next_possible_prudent_value, prudent_value)
 
                 if prudent_value == i:
                     accurate_answers += 1

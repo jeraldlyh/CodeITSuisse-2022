@@ -28,4 +28,4 @@ class Firestore:
     async def create_swizz_data(self, data):
         doc_ref = self.get_doc_ref(self.SWIZZ_COLLECTION, self.SWIZZ_DOCUMENT)
 
-        await doc_ref.set(data)
+        await doc_ref.set({data: data})

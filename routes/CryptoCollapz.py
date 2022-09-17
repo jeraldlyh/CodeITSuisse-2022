@@ -13,34 +13,43 @@ def convert_price(value):
 @app.route("/cryptocollapz", methods=["POST"])
 def cryptoCollapz():
     input_data = request.get_json()
+    return jsonify(sol(input_data))
+
+
+def sol(input_data):
     calculatedDict = dict()
-    calculatedDict[1] = 4
     output = []
     for data_array in input_data:
         temp_data_array = []
         for data in data_array:
-            appeared = False
             if (data in calculatedDict.keys()):
                 temp_data_array.append(calculatedDict[data])
-                continue
-            temp_price = convert_price(data)
-            max_price = max(temp_price, data)
-            while temp_price >= 1:
-                temp_price = convert_price(temp_price)
-                if (temp_price in calculatedDict.keys()):
-                    temp_data_array.append(
-                        max(calculatedDict[temp_price], max_price))
-                    appeared = True
-                    break
-                max_price = max(max_price, temp_price)
-            if (not appeared):
-                temp_data_array.append(max_price)
-                calculatedDict[data] = max_price
+            else:
+                temp_data_array.append(
+                    get_largest_num(data, data, calculatedDict))
         output.append(temp_data_array)
-    return jsonify(output)
-        
+    return output
 
-# print(cryptoCollapz([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]))
+
+def get_largest_num(num, currMax, calculatedDict):
+    if (num == 1):
+        return 4
+
+    if (num in calculatedDict.keys()):
+        return calculatedDict[num]
+
+    temp = convert_price(num)
+    calculatedDict[temp] = max(
+        temp, get_largest_num(temp, temp, calculatedDict))
+    currMax = max(currMax, temp, num)
+    return get_largest_num(temp, currMax, calculatedDict)
+
+
+# calculatedDict = dict()
+# print(get_largest_num(7, 1, calculatedDict))
+# print(calculatedDict)
+# print(sol([[1, 2, 3, 4, 5],
+#            [6, 7, 8, 9, 10]]))
 
 # [
 #   // test case 1

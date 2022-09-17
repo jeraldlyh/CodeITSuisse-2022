@@ -8,5 +8,6 @@ import routes.CryptoCollapz
 import routes.CalendarDays
 import routes.MagicCauldrons
 import routes.TravellingSuisseRobot
+import routes.QuordleKeyboard
 import routes.SwizzStig
 import routes.DNSCache

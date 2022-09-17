@@ -28,6 +28,7 @@ def sol(input_data):
                 temp_data_array.append(
                     get_largest_num(data, data, calculatedDict))
         output.append(temp_data_array)
+    print(calculatedDict)
     return output
 
 
@@ -39,17 +40,18 @@ def get_largest_num(num, currMax, calculatedDict):
         return calculatedDict[num]
 
     temp = convert_price(num)
-    calculatedDict[temp] = max(
-        num, temp, get_largest_num(temp, temp, calculatedDict))
+    calculatedDict[num] = max(num,
+                              temp, get_largest_num(temp, temp, calculatedDict))
     currMax = max(currMax, temp, num)
     return get_largest_num(temp, currMax, calculatedDict)
 
 
 # calculatedDict = dict()
 # print(get_largest_num(7, 1, calculatedDict))
-# print(calculatedDict)
+
 # print(sol([[1, 2, 3, 4, 5],
 #            [6, 7, 8, 9, 10]]))
+
 
 # [
 #   // test case 1

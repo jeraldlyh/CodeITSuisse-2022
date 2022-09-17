@@ -11,3 +11,4 @@ import routes.TravellingSuisseRobot
 import routes.QuordleKeyboard
 import routes.SwizzStig
 import routes.DNSCache
+import routes.SocialDistancing

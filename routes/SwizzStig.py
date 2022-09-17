@@ -15,16 +15,18 @@ def stigwarmup():
         denominator = max_rating * len(input["questions"])
         accurate_answers = 0
 
-        for question in input["questions"]:
+        for j in range(len(input["questions"])):
             prudent_value = 1
-            value_pass = question["lower"]
 
             for i in range(1, max_rating + 1):
-                # Stig replies
-                is_valid = i >= question["lower"] and i <= question["upper"]
+                for question in input["questions"]:
+                    value_pass = question["lower"]
 
-                if is_valid:
-                    prudent_value = max(value_pass, prudent_value)
+                    # Stig replies
+                    is_valid = i >= question["lower"] and i <= question["upper"]
+
+                    if is_valid:
+                        prudent_value = max(value_pass, prudent_value)
 
                 if prudent_value == i:
                     accurate_answers += 1

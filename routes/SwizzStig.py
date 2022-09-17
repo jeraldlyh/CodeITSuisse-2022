@@ -110,7 +110,7 @@ def stigfull(interview_data):
     counter = 0
 
     for interview in interview_data:
-        print(len(interview)["questions"])
+        print(len(interview["questions"]))
         lucky_number = interview["lucky"]
         max_rating = interview["maxRating"]
         questions = interview["questions"]

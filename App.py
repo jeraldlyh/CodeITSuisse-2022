@@ -12,8 +12,8 @@ firebase_admin.initialize_app()
 
 
 @app.route("/")
-def hello():
-    return "Hello, World!"
+async def hello():
+    return "hello world"
 
 
 logger = logging.getLogger()

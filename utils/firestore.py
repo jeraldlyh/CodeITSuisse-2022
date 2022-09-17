@@ -34,3 +34,9 @@ class Firestore:
             )
             await doc_ref.set(x)
             counter += 1
+
+    async def get_swizz_data(self, id):
+        doc_ref = self.get_doc_ref(self.SWIZZ_COLLECTION, self.SWIZZ_DOCUMENT + str(id))
+
+        doc = await doc_ref.get()
+        return doc.to_dict()

@@ -37,9 +37,9 @@ def branch_and_prune(venue):
     if (numPeople == 1):
         return numPosAvailable
 
-    return comb(numPosAvailable, numPeople)
+    # return comb(numPosAvailable, numPeople)
 
-    # return recursive_assign(possible_pos, height, width, numPeople)
+    return recursive_assign(possible_pos, height, width, numPeople)
 
 def recursive_assign(possible_pos, height, width, numPeople):
     if numPeople == 0:
@@ -55,6 +55,9 @@ def recursive_assign(possible_pos, height, width, numPeople):
             numPeople-=1
             possible_pos = fill_surrounding_squares(possible_pos, height, width, pos[0], pos[1])
             output += recursive_assign(possible_pos, height, width, numPeople)
+            possible_pos[pos] = 0
+            numPeople+=1
+    return output
 
 def fill_surrounding_squares(possible_pos, height, width, row, col):
     if row-1 >= 0 and col-1 >= 0: # top left

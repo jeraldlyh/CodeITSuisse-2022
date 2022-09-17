@@ -8,3 +8,4 @@ import routes.CryptoCollapz
 import routes.CalendarDays
 import routes.MagicCauldrons
 import routes.TravellingSuisseRobot
+import routes.QuordleKeyboard

@@ -57,10 +57,22 @@ def parse_ops(ops): # parse string of operations passed in
     return opsArr
 
 def rotate_anticlockwise(side):
-    return list(reversed(list(zip(*side))))
+    # return list(reversed(list(zip(*side))))
+    new_matrix = []
+    for i in range(len(side[0]), 0, -1):
+        new_matrix.append(list(map(lambda x: x[i-1], side)))
+
+    return new_matrix
 
 def rotate_clockwise(side):
-    return list(zip(*side[::-1]))
+    # return list(zip(*side[::-1]))
+    new_matrix = []
+    for i in range(len(side[0])):
+        li = list(map(lambda x: x[i], side))
+        li.reverse()
+        new_matrix.append(li)
+
+    return new_matrix
 
 # up
 def op_up_clockwise(state):

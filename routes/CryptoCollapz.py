@@ -15,8 +15,8 @@ def convert_price(value):
 
 @app.route("/cryptocollapz", methods=["POST"])
 def cryptoCollapz():
-    logging.info("Working")
     input_data = request.get_json()
+    logging.info("RECEIVED -- ", input_data)
 
     output = []
     for data_array in input_data:

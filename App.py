@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 from routes import app
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./codeitsuisse-2022.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./google-credentials.json"
 load_dotenv()
 firebase_admin.initialize_app()
 

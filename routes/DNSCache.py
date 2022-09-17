@@ -54,7 +54,7 @@ async def simulateQuery():
             cache[log]["datetime"] = datetime.now()
         output.append(payload)
 
-    return jsonify({"JSON": output, "status": 200})
+    return jsonify(output)
 
 
 def retrieve_ip_address(domain, lookup_table):

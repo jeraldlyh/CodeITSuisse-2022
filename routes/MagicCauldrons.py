@@ -39,8 +39,15 @@ def solve_part_1(flow_rate: int, time: int, row_number: int, col_number: int):
     full_volume = 100
 
     num_of_overflowed = total_volume / full_volume
+    num_of_bowls = get_arithmetic_sum(1, 1, row_number)
     count = 1
-    volume_at_row = get_arithmetic_sum(1, 1, row_number)
+
+    # [0] Full
+    # [0] Empty
+    # Caclulate
+
+    if num_of_bowls <= num_of_overflowed:
+        excess_bowls = num_of_bowls - num_of_overflowed
 
     cauldrons = {}
 

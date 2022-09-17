@@ -1,14 +1,17 @@
-import logging
 from fractions import Fraction
 
 from flask import jsonify, request
+from utils.firestore import Firestore
 
 from routes import app
 
 
 @app.route("/stig/warmup", methods=["POST"])
-def stigwarmup():
+async def stigwarmup():
     interview_data = request.get_json()
+
+    db = Firestore()
+    await db.create_swizz_data(interview_data)
 
     output = []
     for interview in interview_data:
@@ -18,7 +21,6 @@ def stigwarmup():
 
         prudent_value = 1
 
-        logging.info(accurate_answers, denominator)
         for i in range(1, max_rating + 1):
             for question in interview["questions"]:
                 next_possible_prudent_value = question["lower"]

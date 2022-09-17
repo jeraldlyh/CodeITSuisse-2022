@@ -11,7 +11,7 @@ def convert_price(value):
     return value
 
 
-@app.route("/cryptocollapz")
+@app.route("/cryptocollapz", methods=["POST"])
 def cryptoCollapz():
     input_data = request.get_json()
 

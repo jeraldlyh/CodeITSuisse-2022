@@ -13,21 +13,20 @@ def convert_price(value):
 
 @app.route("/cryptocollapz", methods=["POST"])
 def cryptoCollapz():
-    print(request.get_json())
-    # input_data = request.get_json()["stream"]
+    input_data = request.get_json()
 
-    # output = []
-    # for data_array in input_data:
-    #     temp_data_array = []
+    output = []
+    for data_array in input_data:
+        temp_data_array = []
 
-    #     for data in data_array:
-    #         temp_price = convert_price(data)
-    #         max_price = max(data, temp_price)
+        for data in data_array:
+            temp_price = convert_price(data)
+            max_price = max(data, temp_price)
 
-    #         while temp_price != 1:
-    #             temp_price = convert_price(temp_price)
-    #             max_price = max(max_price, temp_price)
+            while temp_price != 1:
+                temp_price = convert_price(temp_price)
+                max_price = max(max_price, temp_price)
 
-    #         temp_data_array.append(max_price)
-    #     output.append(temp_data_array)
-    return jsonify({"output": []})
+            temp_data_array.append(max_price)
+        output.append(temp_data_array)
+    return jsonify(output)

@@ -1,3 +1,5 @@
+from asyncio.log import logger
+
 from flask import jsonify, request
 from utils.firestore import Firestore
 
@@ -18,7 +20,7 @@ async def instantiateDNSLookup():
 @app.route("/simulateQuery", methods=["POST"])
 async def simulateQuery():
     input_data = request.get_json()
-
+    logger.info(input_data)
     cache_size = input_data["cacheSize"]
     logs = input_data["log"]
     cache = {}
